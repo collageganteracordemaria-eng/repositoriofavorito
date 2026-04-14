@@ -28,6 +28,13 @@ async function searchCountry() {
         const countryData = data[0];
         currentCountry = countryData.name.common;
 
+        /* 🔥 HISTORIAL (AQUÍ VA) */
+        await fetch(`${API_URL}/api/history`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ country: countryData.name.common })
+        });
+
         resultDiv.innerHTML = `
             <h3>${countryData.name.common}</h3>
             <p>Capital: ${countryData.capital?.[0] || "N/A"}</p>
