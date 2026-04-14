@@ -36,6 +36,12 @@ async function searchCountry() {
             <p>Capital: ${countryData.capital?.[0] || "N/A"}</p>
             <p>Población: ${countryData.population}</p>
             <img src="${countryData.flags.png}" width="120">
+
+            <br><br>
+
+            <button onclick="addFavorite('${countryData.name.common}')">
+                Añadir a favoritos ❤️
+            </button>
         `;
 
     } catch (error) {
