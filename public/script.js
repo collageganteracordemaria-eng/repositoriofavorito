@@ -93,10 +93,43 @@ async function loadFavorites() {
     }
 }
 
+
+async function loadHistory() {
+    try {
+        const res = await fetch(`${API_URL}/api/history`);
+        const data = await res.json();
+
+        document.getElementById("history").innerHTML =
+            data.length
+                ? data.map(h => `<li>📍 ${h.country} - ${h.date}</li>`).join("")
+                : "<li>No hay historial</li>";
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function loadWishlist() {
+    try {
+        const res = await fetch(`${API_URL}/api/wishlist`);
+        const data = await res.json();
+
+        document.getElementById("wishlist").innerHTML =
+            data.length
+                ? data.map(w => `<li>⭐ ${w.name}</li>`).join("")
+                : "<li>No hay wishlist</li>";
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 /* ===================== INIT ===================== */
 
 document.addEventListener("DOMContentLoaded", () => {
     loadFavorites();
+    loadHistory();
+    loadWishlist();
 });
 
 /* ===================== EXPORT ===================== */
