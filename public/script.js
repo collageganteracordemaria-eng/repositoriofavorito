@@ -11,50 +11,35 @@ async function searchCountry() {
     const resultDiv = document.getElementById("result");
 
     if (!country) {
-        resultDiv.innerHTML = "<p>⚠️ Escribe un país</p>";
+        resultDiv.innerHTML = "<p>Escribe un país</p>";
         return;
     }
-
-    resultDiv.innerHTML = "<p>⏳ Buscando...</p>";
 
     try {
         const response = await fetch(
             `https://restcountries.com/v3.1/name/${country}?fullText=false`
         );
 
-        const data = await response.json();
+        const data = await response.json(); // 🔥 IMPORTANTE AQUÍ
 
-        console.log("API RESPONSE:", data);
+        console.log("DATA:", data);
 
-        // 🔥 FIX CRÍTICO
         if (!Array.isArray(data) || data.length === 0) {
-            resultDiv.innerHTML = "<p>❌ País no encontrado</p>";
+            resultDiv.innerHTML = "<p>País no encontrado</p>";
             return;
         }
 
         const countryData = data[0];
 
-        if (!countryData) {
-            resultDiv.innerHTML = "<p>❌ Datos inválidos</p>";
-            return;
-        }
-
-        // 🔥 MOSTRAR SIEMPRE ALGO
         resultDiv.innerHTML = `
-            <h3>${countryData.name?.common || "Sin nombre"}</h3>
+            <h3>${countryData.name.common}</h3>
             <p>Capital: ${countryData.capital?.[0] || "N/A"}</p>
-            <p>Población: ${countryData.population || "N/A"}</p>
-            <img src="${countryData.flags?.png || ""}" width="120">
-
-            <br><br>
-
-            <button onclick="addFavorite('${countryData.name?.common || ""}')">
-                Afegir a favorits
-            </button>
+            <p>Población: ${countryData.population}</p>
+            <img src="${countryData.flags.png}" width="120">
         `;
 
     } catch (error) {
-        console.error("ERROR FETCH:", error);
-        resultDiv.innerHTML = "<p>❌ Error de conexión con la API</p>";
+        console.error(error);
+        resultDiv.innerHTML = "<p>Error de conexión</p>";
     }
 }
