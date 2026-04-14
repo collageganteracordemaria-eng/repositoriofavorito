@@ -28,13 +28,16 @@ async function searchCountry() {
         const countryData = data[0];
         currentCountry = countryData.name.common;
 
-        /* 🔥 HISTORIAL (SIN ROMPER SI FALLA) */
+        /* 🔥 HISTORIAL */
         try {
             await fetch(`${API_URL}/api/history`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ country: currentCountry })
             });
+
+            await loadHistory(); // 🔥 FIX
+
         } catch (e) {
             console.error("History error:", e);
         }
@@ -48,6 +51,7 @@ async function searchCountry() {
             <br><br>
 
             <button id="favBtn">Añadir a favoritos ❤️</button>
+            <button onclick="addWishlist(currentCountry)">Añadir a wishlist ⭐</button>
         `;
 
     } catch (error) {
@@ -56,7 +60,7 @@ async function searchCountry() {
     }
 }
 
-/* ===================== CLICK BOTÓN ===================== */
+/* ===================== FAVORITOS ===================== */
 
 document.addEventListener("click", (e) => {
     if (e.target && e.target.id === "favBtn") {
@@ -65,8 +69,6 @@ document.addEventListener("click", (e) => {
         addFavorite(currentCountry);
     }
 });
-
-/* ===================== FAVORITOS ===================== */
 
 async function addFavorite(country) {
     try {
@@ -97,7 +99,7 @@ async function loadFavorites() {
                 : "<li>No hay favoritos</li>";
 
     } catch (err) {
-        console.error("Favorites error:", err);
+        console.error(err);
     }
 }
 
@@ -114,11 +116,26 @@ async function loadHistory() {
                 : "<li>No hay historial</li>";
 
     } catch (e) {
-        console.error("History error:", e);
+        console.error(e);
     }
 }
 
 /* ===================== WISHLIST ===================== */
+
+async function addWishlist(country) {
+    try {
+        await fetch(`${API_URL}/api/wishlist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: country })
+        });
+
+        loadWishlist(); // 🔥 FIX
+
+    } catch (e) {
+        console.error(e);
+    }
+}
 
 async function loadWishlist() {
     try {
@@ -131,7 +148,7 @@ async function loadWishlist() {
                 : "<li>No hay wishlist</li>";
 
     } catch (e) {
-        console.error("Wishlist error:", e);
+        console.error(e);
     }
 }
 
@@ -146,3 +163,4 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ===================== EXPORT ===================== */
 
 window.searchCountry = searchCountry;
+window.addWishlist = addWishlist;
