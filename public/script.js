@@ -75,3 +75,6 @@ async function addFavorite(country) {
         alert("Error conectando con el servidor");
     }
 }
+
+window.searchCountry = searchCountry;
+window.addFavorite = addFavorite;
