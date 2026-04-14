@@ -1,7 +1,8 @@
 let currentCountry = null;
 
 const API_URL = "https://repositori2.onrender.com";
-const FAVORITES_URL = `${API_URL}/api/favorites`;
+
+/* ===================== BUSCAR PAÍS ===================== */
 
 async function searchCountry() {
     const country = document.getElementById("countryInput").value.trim();
@@ -44,47 +45,60 @@ async function searchCountry() {
     }
 }
 
-/* ===================== EVENT DELEGATION (FIX REAL) ===================== */
+/* ===================== CLICK BOTÓN ===================== */
 
 document.addEventListener("click", (e) => {
     if (e.target && e.target.id === "favBtn") {
-        console.log("CLICK EN FAVORITO DETECTADO");
-
-        if (!currentCountry) {
-            alert("No hay país seleccionado");
-            return;
-        }
+        if (!currentCountry) return alert("No hay país");
 
         addFavorite(currentCountry);
     }
 });
 
-/* ===================== FETCH FAVORITOS ===================== */
+/* ===================== ADD FAVORITE ===================== */
 
 async function addFavorite(country) {
-    console.log("ENVIANDO FAVORITO:", country);
-
     try {
-        const response = await fetch(`${API_URL}/api/favorites`, {
+        await fetch(`${API_URL}/api/favorites`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: country })
         });
 
-        const data = await response.json();
+        alert("Añadido a favoritos: " + country);
 
-        console.log("⭐ Favorito añadido:", data);
-        alert(`Añadido a favoritos: ${country}`);
+        loadFavorites();
 
-    } catch (error) {
-        console.error("Error addFavorite:", error);
-        alert("Error conectando con el servidor");
+    } catch (err) {
+        console.error(err);
+        alert("Error servidor");
     }
 }
+
+/* ===================== LOAD FAVORITES ===================== */
+
+async function loadFavorites() {
+    try {
+        const res = await fetch(`${API_URL}/api/favorites`);
+        const data = await res.json();
+
+        const list = document.getElementById("favorites");
+
+        list.innerHTML = data.length
+            ? data.map(f => `<li>❤️ ${f.name}</li>`).join("")
+            : "<li>No hay favoritos</li>";
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+/* ===================== INIT ===================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadFavorites();
+});
 
 /* ===================== EXPORT ===================== */
 
 window.searchCountry = searchCountry;
-window.addFavorite = addFavorite;
