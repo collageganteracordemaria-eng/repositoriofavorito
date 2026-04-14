@@ -28,12 +28,16 @@ async function searchCountry() {
         const countryData = data[0];
         currentCountry = countryData.name.common;
 
-        /* 🔥 HISTORIAL (AQUÍ VA) */
-        await fetch(`${API_URL}/api/history`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ country: countryData.name.common })
-        });
+        /* 🔥 HISTORIAL (SIN ROMPER SI FALLA) */
+        try {
+            await fetch(`${API_URL}/api/history`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ country: currentCountry })
+            });
+        } catch (e) {
+            console.error("History error:", e);
+        }
 
         resultDiv.innerHTML = `
             <h3>${countryData.name.common}</h3>
@@ -62,7 +66,7 @@ document.addEventListener("click", (e) => {
     }
 });
 
-/* ===================== ADD FAVORITE ===================== */
+/* ===================== FAVORITOS ===================== */
 
 async function addFavorite(country) {
     try {
@@ -82,24 +86,22 @@ async function addFavorite(country) {
     }
 }
 
-/* ===================== LOAD FAVORITES ===================== */
-
 async function loadFavorites() {
     try {
         const res = await fetch(`${API_URL}/api/favorites`);
         const data = await res.json();
 
-        const list = document.getElementById("favorites");
-
-        list.innerHTML = data.length
-            ? data.map(f => `<li>❤️ ${f.name}</li>`).join("")
-            : "<li>No hay favoritos</li>";
+        document.getElementById("favorites").innerHTML =
+            data.length
+                ? data.map(f => `<li>❤️ ${f.name}</li>`).join("")
+                : "<li>No hay favoritos</li>";
 
     } catch (err) {
-        console.error(err);
+        console.error("Favorites error:", err);
     }
 }
 
+/* ===================== HISTORIAL ===================== */
 
 async function loadHistory() {
     try {
@@ -112,9 +114,11 @@ async function loadHistory() {
                 : "<li>No hay historial</li>";
 
     } catch (e) {
-        console.error(e);
+        console.error("History error:", e);
     }
 }
+
+/* ===================== WISHLIST ===================== */
 
 async function loadWishlist() {
     try {
@@ -127,7 +131,7 @@ async function loadWishlist() {
                 : "<li>No hay wishlist</li>";
 
     } catch (e) {
-        console.error(e);
+        console.error("Wishlist error:", e);
     }
 }
 
