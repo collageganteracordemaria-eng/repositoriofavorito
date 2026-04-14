@@ -8,55 +8,53 @@ const WISHLIST_URL = `${API_URL}/api/wishlist`;
 
 async function searchCountry() {
     const country = document.getElementById("countryInput").value.trim();
+    const resultDiv = document.getElementById("result");
 
     if (!country) {
-        alert("Escribe un país");
+        resultDiv.innerHTML = "<p>⚠️ Escribe un país</p>";
         return;
     }
-    if (!data || data.length === 0) {
-    document.getElementById("result").innerHTML =
-        "<p>País no encontrado</p>";
-    return;
-}
 
+    resultDiv.innerHTML = "<p>⏳ Buscando...</p>";
 
     try {
         const response = await fetch(
-            `https://restcountries.com/v3.1/name/${country}`
+            `https://restcountries.com/v3.1/name/${country}?fullText=false`
         );
 
-        if (!response.ok) {
-            throw new Error("País no encontrado");
+        const data = await response.json();
+
+        console.log("API RESPONSE:", data);
+
+        // 🔥 FIX CRÍTICO
+        if (!Array.isArray(data) || data.length === 0) {
+            resultDiv.innerHTML = "<p>❌ País no encontrado</p>";
+            return;
         }
 
-        const data = await response.json();
         const countryData = data[0];
 
-        currentCountry = countryData;
+        if (!countryData) {
+            resultDiv.innerHTML = "<p>❌ Datos inválidos</p>";
+            return;
+        }
 
-        // 🔥 GUARDAR EN HISTORIAL (BACKEND)
-        await fetch(HISTORY_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                country: countryData.name.common
-            })
-        });
+        // 🔥 MOSTRAR SIEMPRE ALGO
+        resultDiv.innerHTML = `
+            <h3>${countryData.name?.common || "Sin nombre"}</h3>
+            <p>Capital: ${countryData.capital?.[0] || "N/A"}</p>
+            <p>Población: ${countryData.population || "N/A"}</p>
+            <img src="${countryData.flags?.png || ""}" width="120">
 
-        document.getElementById("result").innerHTML = `
-            <h3>${countryData.name.common}</h3>
-            <p>Capital: ${countryData.capital?.[0]}</p>
-            <p>Población: ${countryData.population}</p>
-            <img src="${countryData.flags.png}" width="100">
             <br><br>
-            <button onclick="addFavorite('${countryData.name.common}')">
+
+            <button onclick="addFavorite('${countryData.name?.common || ""}')">
                 Afegir a favorits
             </button>
         `;
 
     } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("result").innerHTML =
-            "<p>País no encontrado</p>";
+        console.error("ERROR FETCH:", error);
+        resultDiv.innerHTML = "<p>❌ Error de conexión con la API</p>";
     }
 }
