@@ -7,7 +7,7 @@ const HISTORY_URL = `${API_URL}/api/history`;
 const WISHLIST_URL = `${API_URL}/api/wishlist`;
 
 async function searchCountry() {
-    const country = document.getElementById("countryInput").value;
+    const country = document.getElementById("countryInput").value.trim();
 
     if (!country) {
         alert("Escribe un país");
@@ -26,9 +26,20 @@ async function searchCountry() {
         const data = await response.json();
         const countryData = data[0];
 
+        currentCountry = countryData;
+
+        // 🔥 GUARDAR EN HISTORIAL (BACKEND)
+        await fetch(HISTORY_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                country: countryData.name.common
+            })
+        });
+
         document.getElementById("result").innerHTML = `
             <h3>${countryData.name.common}</h3>
-            <p>Capital: ${countryData.capital}</p>
+            <p>Capital: ${countryData.capital?.[0]}</p>
             <p>Población: ${countryData.population}</p>
             <img src="${countryData.flags.png}" width="100">
             <br><br>
