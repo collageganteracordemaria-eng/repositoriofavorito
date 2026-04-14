@@ -1,7 +1,6 @@
 let currentCountry = null;
 
 const API_URL = "https://repositori2.onrender.com";
-
 const FAVORITES_URL = `${API_URL}/api/favorites`;
 
 async function searchCountry() {
@@ -26,8 +25,6 @@ async function searchCountry() {
         }
 
         const countryData = data[0];
-
-        // 💡 guardamos el país actual
         currentCountry = countryData.name.common;
 
         resultDiv.innerHTML = `
@@ -38,15 +35,8 @@ async function searchCountry() {
 
             <br><br>
 
-            <button id="favBtn">
-                Añadir a favoritos ❤️
-            </button>
+            <button id="favBtn">Añadir a favoritos ❤️</button>
         `;
-
-        // 💡 EVENT LISTENER (MEJOR QUE onclick)
-        document.getElementById("favBtn").addEventListener("click", () => {
-            addFavorite(currentCountry);
-        });
 
     } catch (error) {
         console.error(error);
@@ -54,7 +44,26 @@ async function searchCountry() {
     }
 }
 
+/* ===================== EVENT DELEGATION (FIX REAL) ===================== */
+
+document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "favBtn") {
+        console.log("CLICK EN FAVORITO DETECTADO");
+
+        if (!currentCountry) {
+            alert("No hay país seleccionado");
+            return;
+        }
+
+        addFavorite(currentCountry);
+    }
+});
+
+/* ===================== FETCH FAVORITOS ===================== */
+
 async function addFavorite(country) {
+    console.log("ENVIANDO FAVORITO:", country);
+
     try {
         const response = await fetch(`${API_URL}/api/favorites`, {
             method: "POST",
@@ -67,7 +76,6 @@ async function addFavorite(country) {
         const data = await response.json();
 
         console.log("⭐ Favorito añadido:", data);
-
         alert(`Añadido a favoritos: ${country}`);
 
     } catch (error) {
@@ -75,6 +83,8 @@ async function addFavorite(country) {
         alert("Error conectando con el servidor");
     }
 }
+
+/* ===================== EXPORT ===================== */
 
 window.searchCountry = searchCountry;
 window.addFavorite = addFavorite;
