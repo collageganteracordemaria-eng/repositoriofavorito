@@ -95,9 +95,26 @@ async function loadFavorites() {
 
         document.getElementById("favorites").innerHTML =
             data.length
-                ? data.map(f => `<li>❤️ ${f.name}</li>`).join("")
+                ? data.map(f => `
+                    <li>
+                        ❤️ ${f.name}
+                        <button onclick="deleteFavorite(${f.id})">❌</button>
+                    </li>
+                `).join("")
                 : "<li>No hay favoritos</li>";
 
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function deleteFavorite(id) {
+    try {
+        await fetch(`${API_URL}/api/favorites/${id}`, {
+            method: "DELETE"
+        });
+
+        loadFavorites();
     } catch (err) {
         console.error(err);
     }
@@ -144,7 +161,12 @@ async function loadWishlist() {
 
         document.getElementById("wishlist").innerHTML =
             data.length
-                ? data.map(w => `<li>⭐ ${w.name}</li>`).join("")
+                ? data.map(w => `
+                    <li>
+                        ⭐ ${w.name}
+                        <button onclick="deleteWishlist(${w.id})">❌</button>
+                    </li>
+                `).join("")
                 : "<li>No hay wishlist</li>";
 
     } catch (e) {
@@ -152,6 +174,17 @@ async function loadWishlist() {
     }
 }
 
+async function deleteWishlist(id) {
+    try {
+        await fetch(`${API_URL}/api/wishlist/${id}`, {
+            method: "DELETE"
+        });
+
+        loadWishlist();
+    } catch (err) {
+        console.error(err);
+    }
+}
 /* ===================== INIT ===================== */
 
 document.addEventListener("DOMContentLoaded", () => {
