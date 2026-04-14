@@ -13,6 +13,12 @@ async function searchCountry() {
         alert("Escribe un país");
         return;
     }
+    if (!data || data.length === 0) {
+    document.getElementById("result").innerHTML =
+        "<p>País no encontrado</p>";
+    return;
+}
+
 
     try {
         const response = await fetch(
